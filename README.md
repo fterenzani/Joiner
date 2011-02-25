@@ -71,7 +71,7 @@ Joiner don't provide a way to add methods to the table objects, but using static
 		->groupBy('u.id');
 
 
-Now let's immagine that the ralaction within users and photos is many to many. We can just redefine the previous schema in this way:
+Now let's imagine that the ralation within users and photos is many to many. We can just redefine the previous schema in this way:
 
 	$schema = Joiner::getAdapter()->getSchema();
 
@@ -84,4 +84,4 @@ Now let's immagine that the ralaction within users and photos is many to many. W
 
 	$schema->setCrossReference('User', 'UserPicture', 'Picture');
 
-That's all, we can execure the example above without any changes.
+That's all, we can execure all the examples above without any changes.
