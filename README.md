@@ -27,8 +27,8 @@ Now $users is an instance of Joiner_Table, but can be iterated or accessed like 
 		echo $users[0]->name;
 		foreach ($users as $user) {
 
-			// Relations can be helpfull in a row contest too:
-			$user_pictures = $user->getRalated('Picture');
+			// Relations can be helpful in a row contest too:
+			$user_pictures = $user->getRelated('Picture');
 
 			/* Will produce:
 				SELECT Picture.* FROM prefix_pictures AS Picture INNER JOIN
@@ -58,7 +58,7 @@ Joiner don't provide a way to add methods to the table objects, but using static
 	{
 		static function addActiveQuery($table = NULL) {
 			if (!$table) {
-				$table = Joiner::getTable('User u');
+				$table = Joiner::getAdapter()->getTable('User u');
 			}
 
 			return $table->andWhere('u.verified = ?', 'y');
@@ -82,6 +82,7 @@ Now let's imagine that the ralation within users and photos is many to many. We 
 	$schema->setRelation('UserPicture.user_id', 'User.id');
 	$schema->setRelation('UserPicture.picture_id', 'Picture.id');
 
+	// Below the only change:
 	$schema->setCrossReference('User', 'UserPicture', 'Picture');
 
 That's all, we can execure all the examples above without any changes.
