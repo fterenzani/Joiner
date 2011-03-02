@@ -76,12 +76,12 @@ class Joiner_Model implements ArrayAccess {
 
         $related = $this->__db->getSchema()->resolveTableExpr($name);
         $rel = $this->__db->getSchema()
-                ->getRel($this->__model, $related['name']);
+                ->getRelation($this->__model, $related['name']);
 
         if (isset($rel['ref'])) {
 
             $ref = $this->__db->getSchema()
-                    ->getRel($this->__model, $rel['ref']);
+                    ->getRelation($this->__model, $rel['ref']);
 
             return $this->__db->getTable($name)->join($rel['ref'])
                     ->where("{$ref['foreign']['name']}.{$ref['foreign']['key']} = ?", $this->{$ref['key']});
