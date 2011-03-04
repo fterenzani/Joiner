@@ -82,7 +82,14 @@ Now let's imagine that the ralation within users and photos is many to many. We 
 	$schema->setRelation('UserPicture.user_id', 'User.id');
 	$schema->setRelation('UserPicture.picture_id', 'Picture.id');
 
-	// Below the only change:
 	$schema->setCrossReference('User', 'UserPicture', 'Picture');
 
 That's all, we can execure all the examples above without any changes.
+
+## Connections
+
+## More about the Joiner_Adapter
+
+
+## How to paginate results
+
