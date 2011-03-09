@@ -1,6 +1,6 @@
 <?php
 
-class Joiner_Sqlite_Adapter extends Joiner_Connector {
+class Joiner_Sqlite_Adapter extends Joiner_Adapter {
     function getTable($tableExpr) {
         $table = $this->getSchema()->resolveTableExpr($tableExpr);
         require_once Joiner::$path . '/Sqlite/Table.php';

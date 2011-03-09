@@ -2,7 +2,7 @@
 /**
  * @author Francesco Terenzani <f.terenzani@gmail.com>
  * @copyright Copyright (c) 2011, Francesco Terenzani
- */  
+ */
 
 /**
  * Joiner_Adapter

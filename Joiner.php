@@ -57,7 +57,7 @@ abstract class Joiner {
         if (file_exists(self::$path . '/' . $driver . '/Adapter.php')) {
 
             require_once self::$path . '/' . $driver . '/Adapter.php';
-            $class = 'Joiner_' . ucfirst($driver[0]) . '_Adapter';
+            $class = 'Joiner_' . ucfirst($driver) . '_Adapter';
 
         } else {
 
