@@ -96,23 +96,23 @@ That's all, we can execure all the examples above without any changes.
 
 ## Logging
 
-   // Get an adapter
-   $adapter = Joiner::getAdapter();
-
-   // Enable logging
-   $adapter->enableLogging(true);
-
-   // Do something to log
-   $adapter->query('SELECT 1');
-
-   // Dump the log in an HTML table:
-   echo $adapter->getLog();
-
-   // ... or get the log as array:
-   foreach ($adapter->getLog()->toArray() as $log) {
-       $function_call = $log[0];
-       $arguments = $log[1];
-       $time_spent_in_seconds = $log[2];
-   }
+    // Get an adapter
+    $adapter = Joiner::getAdapter();
+    
+    // Enable logging
+    $adapter->enableLogging(true);
+    
+    // Do something to log
+    $adapter->query('SELECT 1');
+    
+    // Dump the log in an HTML table:
+    echo $adapter->getLog();
+    
+    // ... or get the log as array:
+    foreach ($adapter->getLog()->toArray() as $log) {
+        $function_call = $log[0];
+        $arguments = $log[1];
+        $time_spent_in_seconds = $log[2];
+    }
 
 
