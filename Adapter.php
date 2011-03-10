@@ -17,6 +17,8 @@ class Joiner_Adapter extends Joiner {
 
     protected $schema;
 
+    protected $isLoggingAllowed = false;
+
     function __construct($dsn, $username= null, $password = null, $options = array()) {
         $this->dsn = $dsn;
         $this->username = $username;
@@ -38,6 +40,11 @@ class Joiner_Adapter extends Joiner {
             unset($this->username);
             unset($this->password);
             unset($this->options);
+
+            if ($this->isLoggingAllowed) {
+                // decorate the pdo object
+                $this->allowLogging(true);
+            }
         }
         return $this->pdo;
     }
@@ -67,7 +74,7 @@ class Joiner_Adapter extends Joiner {
 
     /**
      * @param string $tableExpr Valid expressions are table_name, TableAlias, table_name as_table, TableAlias as_table
-     * @return Joiner_Table 
+     * @return Joiner_Table
      */
     function getTable($tableExpr) {
         $table = $this->getSchema()->resolveTableExpr($tableExpr);
@@ -115,6 +122,29 @@ class Joiner_Adapter extends Joiner {
     function getExpr($expr, $params = array()) {
         require_once Joiner::$path . '/Expression.php';
         return new Joiner_Expression($expr, $params);
+
+    }
+
+    function allowLogging($bool = true) {
+        $this->isAllowLogging = $bool;
+        if (isset($this->pdo)) {
+            if ($this->pdo instanceof PDO) {
+                require_once Joiner::$path . '/PDOLogger.php';
+                $this->pdo = new Joiner_PDOLogger($this->pdo);
+
+            } else {
+                $this->pdo = $this->pdo->getPdo();
+
+            }
+        }
+
+    }
+
+    function getLog() {
+        if ($this->pdo instanceof Joiner_PDOLogger) {
+            return $this->pdo;
+        }
+        return null;
 
     }
 
