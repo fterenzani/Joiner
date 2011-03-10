@@ -21,7 +21,7 @@ class Joiner_PDOLogger {
     }
 
     function getPdo() {
-        return $pdo;
+        return $this->pdo;
     }
 
 
