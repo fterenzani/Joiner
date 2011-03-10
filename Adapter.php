@@ -17,7 +17,7 @@ class Joiner_Adapter extends Joiner {
 
     protected $schema;
 
-    protected $isLoggingAllowed = false;
+    protected $isLoggingEnabled = false;
 
     function __construct($dsn, $username= null, $password = null, $options = array()) {
         $this->dsn = $dsn;
@@ -41,9 +41,9 @@ class Joiner_Adapter extends Joiner {
             unset($this->password);
             unset($this->options);
 
-            if ($this->isLoggingAllowed) {
+            if ($this->isLoggingEnabled) {
                 // decorate the pdo object
-                $this->allowLogging(true);
+                $this->enableLogging(true);
             }
         }
         return $this->pdo;
@@ -125,8 +125,8 @@ class Joiner_Adapter extends Joiner {
 
     }
 
-    function allowLogging($bool = true) {
-        $this->isAllowLogging = $bool;
+    function enableLogging($bool = true) {
+        $this->isLoggingEnabled = $bool;
         if (isset($this->pdo)) {
             if ($this->pdo instanceof PDO) {
                 require_once Joiner::$path . '/PDOLogger.php';
