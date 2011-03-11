@@ -35,15 +35,11 @@ class Joiner_Model implements ArrayAccess {
     /**
      * @var string The alias of the table defined in Joiner_Schema or the table
      * name
-     *
-     * @todo rename it in alias
      */
     protected $__model;
 
     /**
      * @var object the adapter instance
-     *
-     * @todo rename it in adapter
      */
     protected $__db;
 

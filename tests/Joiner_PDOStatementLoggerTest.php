@@ -33,6 +33,7 @@ class Joiner_PDOStatementLoggerTest extends PHPUnit_Framework_TestCase {
 	 * @todo Implement test__call().
 	 */
 	public function test__call() {
+		Joiner_PDOLogger::$log = array();
 		$this->object->fetch();
 		$this->assertEquals(1, count(Joiner_PDOLogger::$log));
 		$this->assertEquals(3, count(Joiner_PDOLogger::$log[0]));
