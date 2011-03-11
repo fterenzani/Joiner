@@ -6,11 +6,6 @@
  */
 
 /**
- * Zend_Paginator_Adapter_Interface
- */
-require_once 'Zend/Paginator/Adapter/Interface.php';
-
-/**
  * Joiner doesn't provide a way to paginate resultset but instead provide an
  * inteface for the Zend Framework Paginator.
  *
@@ -21,6 +16,7 @@ require_once 'Zend/Paginator/Adapter/Interface.php';
  *
  * <code>
  * require_once 'Zend/Paginator.php';
+ * require_once 'Zend/Paginator/Adapter/Interface.php';
  * require_once 'Joiner/ZendPaginatorAdapter.php';
  *
  * $items = Joiner::getAdapter()->getTable('Item')->where('a = ?', 'b');

@@ -99,6 +99,7 @@ Below a small introdution about how to paginate results usign Joiner and the Zen
 ### Step 1: Set it up
 
     require_once 'Zend/Paginator.php';
+    require_once 'Zend/Paginator/Adapter/Interface.php';
     require_once 'Joiner/ZendPaginatorAdapter.php';
 
     $items = Joiner::getAdapter()->getTable('Item')->where('a = ?', 'b');
