@@ -1,6 +1,54 @@
 <?php
 
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Paginator
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: Interface.php 20096 2010-01-06 02:05:09Z bkarwin $
+ */
+
+/**
+ * Interface for pagination adapters.
+ *
+ * @category   Zend
+ * @package    Zend_Paginator
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
+interface Zend_Paginator_Adapter_Interface extends Countable
+{
+    /**
+     * Returns the total number of rows in the collection.
+     *
+     * @return integer
+     */
+    //public function count();
+
+    /**
+     * Returns an collection of items for a page.
+     *
+     * @param  integer $offset Page offset
+     * @param  integer $itemCountPerPage Number of items per page
+     * @return array
+     */
+    public function getItems($offset, $itemCountPerPage);
+}
+
 require_once dirname(__FILE__).'/../ZendPaginatorAdapter.php';
+require_once dirname(__FILE__).'/../Joiner.php';
 
 /**
  * Test class for Joiner_ZendPaginatorAdapter.
@@ -17,7 +65,12 @@ class Joiner_ZendPaginatorAdapterTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new Joiner_ZendPaginatorAdapter;
+		$db = Joiner::setAdapter('test', 'sqlite::memory:');
+        $db->exec("create table a (c1, c2, c3)");
+        $db->exec("insert into a values ('1', '2', '3')");
+        $db->exec("insert into a values ('2', '4', '5')");
+
+        $this->object = new Joiner_ZendPaginatorAdapter($db->getTable('a'));
     }
 
     /**
@@ -27,24 +80,15 @@ class Joiner_ZendPaginatorAdapterTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
     }
 
-    /**
-     * @todo Implement testCount().
-     */
     public function testCount() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->assertEquals(2, $this->object->count());
     }
 
-    /**
-     * @todo Implement testGetItems().
-     */
     public function testGetItems() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+		$items = $this->object->getItems(1, 1);
+        $this->assertEquals(1, count($items));
+        $this->assertEquals(true, $items[0] instanceof Joiner_Model);
+        $this->assertEquals('2', $items[0]['c1']);
     }
 }
 ?>

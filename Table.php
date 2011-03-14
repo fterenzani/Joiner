@@ -38,7 +38,7 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
     protected $distinct;
 
     protected $set = array();
-    
+
     protected $results;
     protected $stmt;
     protected $model;
@@ -56,42 +56,39 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
 
     }
 
-    function  __toString() {
-        $this->table . ' AS ' . $this->as;
-    }
 
-	/**
-	 * @return Joiner_Adapter
-	 */
+    /**
+     * @return Joiner_Adapter
+     */
     function getAdapter() {
         return $this->db;
     }
 
-	/**
-	 * @param string $tableExpr
-	 * @return Join_Table
-	 */
+    /**
+     * @param string $tableExpr
+     * @return Join_Table
+     */
     function join($tableExpr) {
 
         return $this->_join($tableExpr, 'INNER');
 
     }
 
-	/**
-	 * @param string $tableExpr
-	 * @return Join_Table
-	 */
+    /**
+     * @param string $tableExpr
+     * @return Join_Table
+     */
     function leftJoin($tableExpr) {
 
         return $this->_join($tableExpr, 'LEFT');
 
     }
 
-	/**
-	 * @param string $tableExpr
-	 * @param string $type
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $tableExpr
+     * @param string $type
+     * @return Joiner_Table
+     */
     protected function _join($tableExpr, $type) {
 
         $join = $this->db->getSchema()->resolveTableExpr($tableExpr);
@@ -115,11 +112,11 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
 
     }
 
-	/**
-	 * @param string $where
-	 * @param mixin $params
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $where
+     * @param mixin $params
+     * @return Joiner_Table
+     */
     function where($where = null, $params = array()) {
 
         $this->where = $where? ' WHERE ' . $where: null;
@@ -128,32 +125,32 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
         return $this->bind($params);
     }
 
-	/**
-	 * @param string $where
-	 * @param mixin $params
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $where
+     * @param mixin $params
+     * @return Joiner_Table
+     */
     function orWhere($where, $params = array()) {
         $this->where .= ($this->where? ' OR ': ' WHERE ') . $where;
         return $this->bind($params);
     }
 
-	/**
-	 * @param string $where
-	 * @param mixin $params
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $where
+     * @param mixin $params
+     * @return Joiner_Table
+     */
     function andWhere($where, $params = array()) {
         $this->where .= ($this->where? ' AND ': ' WHERE ') . $where;
         return $this->bind($params);
     }
 
 
-	/**
-	 * @param string $field
-	 * @param array $params
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $field
+     * @param array $params
+     * @return Joiner_Table
+     */
     function whereIn($field = null, Array $params = array()) {
         if ($field) {
             $str = ltrim(str_repeat(',?', count($params)), ',');
@@ -168,32 +165,32 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
         return $this->bind($params);
     }
 
-	/**
-	 * @param string $field
-	 * @param array $params
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $field
+     * @param array $params
+     * @return Joiner_Table
+     */
     function andWhereIn($field, $params) {
         $str = ltrim(str_repeat(',?', count($params)), ',');
         $this->where .= ($this->where? ' AND ': ' WHERE ') . "$field IN ($str)";
         return $this->bind($params);
     }
 
-	/**
-	 * @param string $field
-	 * @param array $params
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $field
+     * @param array $params
+     * @return Joiner_Table
+     */
     function orWhereIn($field, $params) {
         $str = ltrim(str_repeat(',?', count($params)), ',');
         $this->where .= ($this->where? ' OR ': ' WHERE ') . "$field ($str)";
         return $this->bind($params);
     }
 
-	/**
-	 * @param mixin $params
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param mixin $params
+     * @return Joiner_Table
+     */
     function bind($params) {
         foreach ((array) $params as $value) {
             $this->params[] = $value;
@@ -201,131 +198,131 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
         return $this;
     }
 
-	/**
-	 * @param string $group
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $group
+     * @return Joiner_Table
+     */
     function groupBy($group) {
         $this->groupBy = $group? ' GROUP BY ' . $group: null;
         return $this;
     }
 
-	/**
-	 * @param string $group
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $group
+     * @return Joiner_Table
+     */
     function addGroupBy($group) {
         $this->groupBy .= ($this->groupBy? ', ': ' GROUP BY ') . $group;
         return $this;
     }
 
 
-	/**
-	 * @param string $order
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $order
+     * @return Joiner_Table
+     */
     function orderBy($order = null) {
         $this->orderBy = $order? ' ORDER BY ' . $order: null;
         return $this;
     }
 
-	/**
-	 * @param string $order
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $order
+     * @return Joiner_Table
+     */
     function addOrderBy($order) {
         $this->orderBy .= (isset($this->orderBy)? ', ': ' ORDER BY ') . $order;
         return $this;
     }
 
-	/**
-	 * @param int $limit
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param int $limit
+     * @return Joiner_Table
+     */
     function limit($limit = NULL) {
         $this->limit = $limit;
         return $this;
     }
 
-	/**
-	 * @param int $offset
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param int $offset
+     * @return Joiner_Table
+     */
     function offset($offset = NULL) {
         $this->offset = $offset;
         return $this;
     }
 
-	/**
-	 * @param string $having
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $having
+     * @return Joiner_Table
+     */
     function having($having = null) {
         $this->having = ($having)? ' HAVING ' . $having: null;
         return $this;
     }
 
-	/**
-	 * @param string $having
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $having
+     * @return Joiner_Table
+     */
     function andHaving($having) {
         $this->having .= (isset($this->having)? ' AND HAVING ': ' HAVING ') . $having;
         return $this;
     }
 
-	/**
-	 * @param string $having
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $having
+     * @return Joiner_Table
+     */
     function orHaving($having) {
         $this->having .= (isset($this->having)? ' OR HAVING ': ' HAVING ') . $having;
         return $this;
     }
 
-	/**
-	 * @param string $fields
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $fields
+     * @return Joiner_Table
+     */
     function select($fields) {
         $this->select = $fields;
         return $this;
     }
 
-	/**
-	 * @param string $fields
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param string $fields
+     * @return Joiner_Table
+     */
     function addSelect($fields) {
         $this->select .= ($this->select? ', ': '') . $fields;
         return $this;
 
     }
 
-	/**
-	 * @param bool $bool
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param bool $bool
+     * @return Joiner_Table
+     */
     function distinct($bool = true) {
         $this->distinct = $bool? ' DISTINCT ': '';
         return $this;
 
     }
 
-	/**
-	 * @param array $hash
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param array $hash
+     * @return Joiner_Table
+     */
     function set(array $hash = array()) {
         $this->set = $hash;
         return $this;
 
     }
 
-	/**
-	 * @param array $hash
-	 * @return Joiner_Table
-	 */
+    /**
+     * @param array $hash
+     * @return Joiner_Table
+     */
     function mergeSet(array $hash) {
         $this->set = array_merge($this->set, $hash);
         return $this;
@@ -448,7 +445,7 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
         $stmt = $this->db->query("SHOW COLUMNS FROM table [LIKE '" . $this->table . "'])");
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    
+
     /**
      * Iterator
      */

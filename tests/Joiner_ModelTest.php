@@ -1,7 +1,7 @@
 <?php
 
 require_once dirname(__FILE__).'/../Joiner.php';
-//require_once dirname(__FILE__).'/../Model.php';
+require_once dirname(__FILE__).'/../Model.php';
 
 /**
  * Test class for Joiner_Model.

@@ -1,5 +1,6 @@
 <?php
 
+require_once dirname(__FILE__).'/../Joiner.php';
 require_once dirname(__FILE__).'/../Table.php';
 
 /**
@@ -17,7 +18,28 @@ class Joiner_TableTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new Joiner_Table;
+		$db = $this->adapter = Joiner::setAdapter('test', 'sqlite::memory:');
+
+		$db->exec("create table a (c1, c2, c3)");
+        $db->exec("create table b (c1, c2, c3)");
+        $db->exec("create table c (c1, c2, c3)");
+        $db->exec("create table z (a_c1, c_c1)");
+        $db->exec("insert into a values ('1', '2', '3')");
+        $db->exec("insert into a values ('2', '4', '5')");
+        $db->exec("insert into b values ('1', 'b', 'b')");
+        $db->exec("insert into b values ('2', '4', '5')");
+        $db->exec("insert into c values ('1', '6', '7')");
+        $db->exec("insert into c values ('2', '8', '9')");
+        $db->exec("insert into z values ('1', '2')");
+
+        $db->getSchema()->setTable('a')->setTable('b')
+                ->setRelation('a.c1', 'b.c1')
+                ->setTable('z')
+                ->setRelation('z.a_c1', 'a.c1')
+                ->setRelation('z.c_c1', 'c.c1')
+                ->setCrossReference('a', 'z', 'c');
+
+        $this->object = $this->adapter->getTable('a');
     }
 
     /**
@@ -27,44 +49,42 @@ class Joiner_TableTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
     }
 
-    /**
-     * @todo Implement test__toString().
-     */
-    public function test__toString() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @todo Implement testGetAdapter().
-     */
     public function testGetAdapter() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+		$this->assertEquals(true, $this->object->getAdapter() instanceof Joiner_Sqlite_Adapter);
+        
     }
 
-    /**
-     * @todo Implement testJoin().
-     */
     public function testJoin() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+
+		$table = $this->adapter->getTable('a')->join('b');
+
+		$this->assertEquals(true, $table instanceof Joiner_Sqlite_Table);
+		$this->assertEquals(true, $table === $this->object);
+		
+		$this->assertAttributeEquals(' INNER JOIN b AS b ON a.c1 = b.c1 ',
+				'join', $table);
+
+		// get a crean table
+		$table = $table->getAdapter()->getTable('a')->join('c');
+
+		$this->assertAttributeEquals(' INNER JOIN z AS z ON a.c1 = z.a_c1  INNER JOIN  c AS c ON z.c_c1 = c.c1 ',
+				'join', $table);
+
     }
 
-    /**
-     * @todo Implement testLeftJoin().
-     */
     public function testLeftJoin() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+
+		$table = $this->adapter->getTable('a')->leftJoin('b');
+
+		$this->assertAttributeEquals(' LEFT JOIN b AS b ON a.c1 = b.c1 ',
+				'join', $table);
+
+		// get a crean table
+		$table = $table->getAdapter()->getTable('a')->leftJoin('c');
+
+		$this->assertAttributeEquals(' LEFT JOIN z AS z ON a.c1 = z.a_c1  LEFT JOIN  c AS c ON z.c_c1 = c.c1 ',
+				'join', $table);
+
     }
 
     /**
