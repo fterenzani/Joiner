@@ -11,7 +11,7 @@
 class Joiner_PDOLogger {
 
     protected $pdo;
-    public static $log;
+    public static $log = array();
 
     function __construct(PDO $pdo) {
 
@@ -51,12 +51,23 @@ class Joiner_PDOLogger {
         $return = '<table border=1><tr><th>Func<th>Args<th>Milliseconds';
 
         foreach (self::$log as $log) {
+
+            if ($log[0] === 'PDOStatement::setFetchMode')
+                continue;
+
             $milliseconds = round($log[2] * 1000);
-            $return .= "<tr><td>$log[0]<td>" . print_r($log[1], true) . "<td>$milliseconds";
+            $return .= "<tr><td valign=top>$log[0]<td>";
+
+			foreach ($log[1] as $i => $param) {
+              $return .= 'Param ' . ($i + 1) . ":\n<pre style='white-space:pre-wrap'>" . print_r($param, true) . "</pre>\n<br>";
+
+            }
+
+			$return .= "<td>$milliseconds";
             $total += $milliseconds;
         }
 
         return $return . '<tr><th colspan=2>Milliseconds:<td>' . $total . '</table>';
-        
+
     }
 }
