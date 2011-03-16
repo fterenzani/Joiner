@@ -18,6 +18,8 @@ class Joiner_Adapter extends Joiner {
     protected $schema;
 
     protected $isLoggingEnabled = false;
+    
+    protected $tableClass = 'Joiner_Table';
 
     function __construct($dsn, $username= null, $password = null, $options = array()) {
         $this->dsn = $dsn;
@@ -77,11 +79,20 @@ class Joiner_Adapter extends Joiner {
      * @return Joiner_Table
      */
     function getTable($tableExpr) {
-        $table = $this->getSchema()->resolveTableExpr($tableExpr);
+        $tableExpr = array_map('trim', explode(',', $tableExpr));
+
+        $table = $this->getSchema()->resolveTableExpr(array_shift($tableExpr));
 
         require_once Joiner::$path . '/Table.php';
 
-        return new Joiner_Table($this, $table['name'], $table['table'], $table['as']);
+        $table = new $this->tableClass($this, $table['name'], $table['table'], $table['as']);
+        
+        foreach ($tableExpr as $expr) {
+            $table->join($expr);
+
+        }
+
+        return $table;
 
     }
 
