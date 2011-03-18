@@ -43,9 +43,10 @@ abstract class Joiner {
         // First call, set up the default adapter and the current path
         if (!isset(self::$current)) {
 
+            self::$path = dirname(__FILE__);
+
             require_once self::$path . '/Adapter.php';
 
-            self::$path = dirname(__FILE__);
             self::$current = $name;
 
         }

@@ -119,7 +119,7 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
      */
     function where($where = null, $params = array()) {
 
-        $this->where = $where? ' WHERE ' . $where: null;
+        $this->where = $where? ' WHERE (' . $where . ')': null;
         $this->params = array();
 
         return $this->bind($params);
@@ -131,7 +131,7 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
      * @return Joiner_Table
      */
     function orWhere($where, $params = array()) {
-        $this->where .= ($this->where? ' OR ': ' WHERE ') . $where;
+        $this->where .= ($this->where? ' OR (': ' WHERE (') . $where . ')';
         return $this->bind($params);
     }
 
@@ -141,7 +141,7 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
      * @return Joiner_Table
      */
     function andWhere($where, $params = array()) {
-        $this->where .= ($this->where? ' AND ': ' WHERE ') . $where;
+        $this->where .= ($this->where? ' AND (': ' WHERE (') . $where . ')';
         return $this->bind($params);
     }
 
@@ -154,7 +154,7 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
     function whereIn($field = null, Array $params = array()) {
         if ($field) {
             $str = ltrim(str_repeat(',?', count($params)), ',');
-            $this->where .= ' WHERE ' . "$field IN ($str)";
+            $this->where .= ' WHERE ' . "($field IN ($str))";
 
         } else {
             $this->where = '';
@@ -172,7 +172,7 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
      */
     function andWhereIn($field, $params) {
         $str = ltrim(str_repeat(',?', count($params)), ',');
-        $this->where .= ($this->where? ' AND ': ' WHERE ') . "$field IN ($str)";
+        $this->where .= ($this->where? ' AND (': ' WHERE (') . "$field IN ($str))";
         return $this->bind($params);
     }
 
@@ -183,7 +183,7 @@ class Joiner_Table implements Iterator, ArrayAccess, Countable {
      */
     function orWhereIn($field, $params) {
         $str = ltrim(str_repeat(',?', count($params)), ',');
-        $this->where .= ($this->where? ' OR ': ' WHERE ') . "$field ($str)";
+        $this->where .= ($this->where? ' OR (': ' WHERE (') . "$field ($str))";
         return $this->bind($params);
     }
 
