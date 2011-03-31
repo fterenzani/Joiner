@@ -8,7 +8,7 @@
  * Joiner_Adapter
  * @package Joiner
  */
-class Joiner_Adapter extends Joiner {
+class Joiner_Adapter {
     protected $pdo;
     protected $dsn;
     protected $username;
@@ -30,7 +30,7 @@ class Joiner_Adapter extends Joiner {
     }
 
     /**
-     * @return PDO This per adapter PDO instance
+     * @return PDO|PDOLogger This per adapter PDO instance
      */
     function getConnection() {
         if (!isset($this->pdo)) {
@@ -96,22 +96,43 @@ class Joiner_Adapter extends Joiner {
 
     }
 
-    // Don't respect the PDO interface
-    function prepare($sql) {
-        return $this->getConnection()->prepare($sql);
+    /**
+     * Proxy for PDO::prepare
+     * @param string $sql An SQL statement to prepare
+     * @param array $driver_options PDO driver options
+     * @return PDOStatement
+     */
+    function prepare($sql, $driver_options = null) {
+        return $this->getConnection()->prepare($sql, $driver_options);
     }
 
-    // Don't respect the PDO interface
+    /**
+     * Proxy for PDO::exec
+     * @param string $sql An SQL statement
+     * @return int The number of affected rows
+     */
     function exec($sql) {
         return $this->getConnection()->exec($sql);
     }
 
-    // Don't respect the PDO interface
-    function query($sql) {
-        return $this->getConnection()->query($sql);
+    /**
+     * Proxy for PDO::query
+     * @param string $sql Proxy for PDO::exec
+     * @param int $fetchMode The PDO fetch mode
+     * @param mixin $mixin1 Fetch mode specific argument
+     * @param mixin $mixin2 Fetch mode specific argument
+     * @return PDOStatement
+     */
+    function query($sql, $fetchMode = null, $mixin1 = null,  $mixin2 = null) {
+        return $this->getConnection()->query($sql, $fetchMode, $mixin1, $mixin2);
     }
 
-    // Need test
+    /**
+     *
+     * @param string $string
+     * @param string|number $value
+     * @return Joiner_Table
+     */
     function findBy($string, $value) {
         $string = explode('.', $string);
         if (count($string) != 2) {
@@ -120,7 +141,12 @@ class Joiner_Adapter extends Joiner {
         return $this->getTable($string[0])->where("$string[1] = ?", array($value))->fetchAll();
     }
 
-    // Need test
+   /**
+    *
+    * @param string $string
+    * @param string|number $value
+    * @return Joiner_Model|false
+    */
     function findOneBy($string, $value) {
         $string = explode('.', $string);
         if (count($string) != 2) {
@@ -129,13 +155,23 @@ class Joiner_Adapter extends Joiner {
         return $this->getTable($string[0])->where("$string[1] = ?", array($value))->limit(1)->fetch();
     }
 
-
+    /**
+     *
+     * @param string Sql expression ('now()', 'md5(?)', ...)
+     * @param mixin $params The related param to bind
+     * @return Joiner_Expression
+     */
     function getExpr($expr, $params = array()) {
         require_once Joiner::$path . '/Expression.php';
         return new Joiner_Expression($expr, $params);
 
     }
 
+    /**
+     * Decorate the PDO object with a logger
+     * @param bool $bool True for enable, false to disable
+     * @return void
+     */
     function enableLogging($bool = true) {
         $this->isLoggingEnabled = $bool;
         if (isset($this->pdo)) {
@@ -151,6 +187,10 @@ class Joiner_Adapter extends Joiner {
 
     }
 
+    /**
+     * Return the Joiner_PDOLogger instance is loggin is enabled
+     * @return null|Joiner_PDOLogger
+     */
     function getLog() {
         if ($this->pdo instanceof Joiner_PDOLogger) {
             return $this->pdo;
@@ -159,6 +199,12 @@ class Joiner_Adapter extends Joiner {
 
     }
 
+    /**
+     * A proxy for the PDO methods not defined in thi class
+     * @param string $method The PDO method to call
+     * @param array $args The arguments of the given method
+     * @return mixin
+     */
     function  __call($method, $args) {
         return call_user_func_array(array($this->getConnection(), $method), $args);
     }
