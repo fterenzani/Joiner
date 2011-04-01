@@ -96,37 +96,7 @@ class Joiner_Adapter {
 
     }
 
-    /**
-     * Proxy for PDO::prepare
-     * @param string $sql An SQL statement to prepare
-     * @param array $driver_options PDO driver options
-     * @return PDOStatement
-     */
-    function prepare($sql, $driver_options = null) {
-        return $this->getConnection()->prepare($sql, $driver_options);
-    }
-
-    /**
-     * Proxy for PDO::exec
-     * @param string $sql An SQL statement
-     * @return int The number of affected rows
-     */
-    function exec($sql) {
-        return $this->getConnection()->exec($sql);
-    }
-
-    /**
-     * Proxy for PDO::query
-     * @param string $sql Proxy for PDO::exec
-     * @param int $fetchMode The PDO fetch mode
-     * @param mixin $mixin1 Fetch mode specific argument
-     * @param mixin $mixin2 Fetch mode specific argument
-     * @return PDOStatement
-     */
-    function query($sql, $fetchMode = null, $mixin1 = null,  $mixin2 = null) {
-        return $this->getConnection()->query($sql, $fetchMode, $mixin1, $mixin2);
-    }
-
+ 
     /**
      *
      * @param string $string
@@ -200,7 +170,7 @@ class Joiner_Adapter {
     }
 
     /**
-     * A proxy for the PDO methods not defined in thi class
+     * A proxy for the PDO methods not defined in this class
      * @param string $method The PDO method to call
      * @param array $args The arguments of the given method
      * @return mixin
