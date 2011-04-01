@@ -35,7 +35,6 @@ class JoinerTest extends PHPUnit_Framework_TestCase {
 
 	public function testSetAdapter() {
 		$this->assertEquals(true, $this->adapter1 instanceof Joiner_Adapter);
-		$this->assertEquals(true, $this->adapter1 instanceof Joiner);
 		$this->assertEquals(true, get_class(Joiner::setAdapter('none', 'foo::bar:')) === 'Joiner_Adapter');
 		$this->assertEquals(true, get_class($this->adapter1) === 'Joiner_Sqlite_Adapter');
 	}
@@ -53,11 +52,10 @@ class JoinerTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(true, Joiner::getAdapter() === $this->adapter2);
 
-		$this->assertEquals(true, Joiner::getAdapter() instanceof Joiner);
-		$this->assertEquals(true, Joiner::getAdapter('test') instanceof Joiner);
-		$this->assertEquals(true, Joiner::getAdapter('test2') instanceof Joiner);
-		$this->assertEquals(true, Joiner::getAdapter('test') !== $this->adapter2);
-		$this->assertEquals(true, Joiner::getAdapter('test2') !== $this->adapter1);
+		$this->assertEquals(true, Joiner::getAdapter() instanceof Joiner_Adapter);
+		$this->assertEquals(true, Joiner::getAdapter('test') instanceof Joiner_Adapter);
+		$this->assertEquals(true, Joiner::getAdapter('test2') instanceof Joiner_Adapter);
+		$this->assertEquals(true, $this->adapter1 !== $this->adapter2);
 		$this->assertEquals(true, Joiner::getAdapter('test') === $this->adapter1);
 		$this->assertEquals(true, Joiner::getAdapter('test2') === $this->adapter2);
 		$this->setExpectedException('Exception');

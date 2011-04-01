@@ -1,6 +1,8 @@
 <?php
 
 require_once dirname(__FILE__).'/../Adapter.php';
+require_once dirname(__FILE__).'/../Joiner.php';
+require_once dirname(__FILE__).'/../PDOLogger.php';
 
 /**
  * Test class for Joiner_Adapter.
@@ -17,7 +19,7 @@ class Joiner_AdapterTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new Joiner_Adapter;
+        $this->object = new Joiner_Adapter('sqlite::memory:');
     }
 
     /**
@@ -25,136 +27,131 @@ class Joiner_AdapterTest extends PHPUnit_Framework_TestCase {
      * This method is called after a test is executed.
      */
     protected function tearDown() {
+        Joiner_PDOLogger::$log = array();
     }
 
-    /**
-     * @todo Implement testGetConnection().
-     */
+    protected function fixtures() {
+
+        $this->object->exec('create table foo (bar VARCHAR(255))');
+        $this->object->exec('insert into foo (bar) VALUES ("1")');
+        $this->object->exec('insert into foo (bar) VALUES ("2")');
+    }
+
     public function testGetConnection() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $conn = $this->object->getConnection();
+        $this->assertInstanceOf('PDO', $conn);
+        $this->assertEquals(true, $conn === $this->object->getConnection());
     }
 
-    /**
-     * @todo Implement testGetSchema().
-     */
     public function testGetSchema() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $schema = $this->object->getSchema();
+        $this->assertInstanceOf('Joiner_Schema', $schema);
+        $this->assertEquals(true, $schema === $this->object->getSchema());
     }
 
-    /**
-     * @todo Implement testExecute().
-     */
     public function testExecute() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $a = $this->object->execute('select 1');
+        $b = $this->object->execute('select ?', 1);
+        $c = $this->object->execute('select ?', array(1));
+
+
+        $this->assertInstanceOf('PDOStatement', $a);
+        $this->assertInstanceOf('PDOStatement', $b);
+        $this->assertInstanceOf('PDOStatement', $c);
+
+        $this->assertEquals(true, $a->fetchColumn(0) === '1');
+        $this->assertEquals(true, $b->fetchColumn(0) === '1');
+        $this->assertEquals(true, $c->fetchColumn(0) === '1');
+        
     }
 
-    /**
-     * @todo Implement testGetTable().
-     */
     public function testGetTable() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+
+        $table = $this->object->getTable('foo');
+        $this->assertInstanceOf('Joiner_Table', $table);
+        $this->assertEquals(false, $table === $this->object->getTable('foo'));
+
+        $this->setExpectedException('Exception');
+        $this->object->getTable('foo, bar');
+
+        $this->object->getSchema()->setTable('foo')->setTable('bar')
+                ->setRelation('foo.id', 'bar.foo_id');
+
+        $this->assertInstanceOf('Joiner_Table', $this->object->getTable('foo, bar'));
+
+
+        
     }
 
-    /**
-     * @todo Implement testPrepare().
-     */
-    public function testPrepare() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @todo Implement testExec().
-     */
-    public function testExec() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @todo Implement testQuery().
-     */
-    public function testQuery() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
+ 
     /**
      * @todo Implement testFindBy().
      */
     public function testFindBy() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+
+        $this->fixtures();
+
+        $foo = $this->object->findBy('foo.bar', 1);
+        $this->assertEquals('1', $foo[0]->bar);
+        
+        $this->setExpectedException('Exception');
+        $this->object->findBy('foo', 'bar');
+
+
     }
 
     /**
      * @todo Implement testFindOneBy().
      */
     public function testFindOneBy() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+
+        $this->fixtures();
+
+        $foo = $this->object->findOneBy('foo.bar', 1);
+        $this->assertEquals('1', $foo->bar);
+
+        $this->setExpectedException('Exception');
+        $this->object->findOneBy('foo', 'bar');
     }
 
-    /**
-     * @todo Implement testGetExpr().
-     */
     public function testGetExpr() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $foo = $this->object->getExpr('foo()');
+        $bar = $this->object->getExpr('bar(?)', 'foo');
+
+        $this->assertInstanceOf('Joiner_Expression', $foo);
+        $this->assertInstanceOf('Joiner_Expression', $bar);
     }
 
-    /**
-     * @todo Implement testEnableLogging().
-     */
     public function testEnableLogging() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->object->query('select 1');
+
+        $this->object->enableLogging();
+        $this->assertAttributeInstanceOf('Joiner_PDOLogger', 'pdo', $this->object);
+
+        $this->object->enableLogging(false);
+        $this->assertAttributeInstanceOf('PDO', 'pdo', $this->object);
+
+        $new = new Joiner_Adapter('sqlite::memory:');
+
+        $this->object->enableLogging();
+        $this->object->query('select 1');
+        $this->assertAttributeInstanceOf('Joiner_PDOLogger', 'pdo', $this->object);
+
+        $this->object->enableLogging(false);
     }
 
-    /**
-     * @todo Implement testGetLog().
-     */
+
     public function testGetLog() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->assertEquals(null, $this->object->getLog());
+        $this->object->enableLogging();
+        $this->object->query('select 1');
+        $this->assertInstanceOf('Joiner_PDOLogger', $this->object->getLog());
     }
 
-    /**
-     * @todo Implement test__call().
-     */
+
     public function test__call() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $actual = $this->object->quote('foo');
+        $this->assertEquals("'foo'", $actual);
     }
 }
 ?>

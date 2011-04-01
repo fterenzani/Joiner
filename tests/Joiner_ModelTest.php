@@ -58,9 +58,6 @@ class Joiner_ModelTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(true, $this->object->toArray() === $aspected);
     }
 
-    /**
-     * @todo Implement testGetRelated().
-     */
     public function testGetRelated() {
         $aspected = array (
           'c1' => '1',
@@ -86,24 +83,16 @@ class Joiner_ModelTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(true, isset($this->object['c1']));
     }
 
-    /**
-     * @todo Implement testOffsetGet().
-     */
+
     public function testOffsetGet() {
         $this->assertEquals(true, $this->object['c1'] === '1');
     }
 
-    /**
-     * @todo Implement testOffsetSet().
-     */
     public function testOffsetSet() {
         $this->object['foo'] = 'bar';
         $this->assertEquals(true, $this->object['foo'] === 'bar');
     }
 
-    /**
-     * @todo Implement testOffsetUnset().
-     */
     public function testOffsetUnset() {
         unset($this->object['c1']);
         $this->assertEquals(false, isset($this->object['c1']));

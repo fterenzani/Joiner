@@ -19,9 +19,9 @@ class Joiner_TableTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-		$db = $this->adapter = Joiner::setAdapter('test', 'sqlite::memory:');
+        $db = $this->adapter = Joiner::setAdapter('test', 'sqlite::memory:');
 
-		$db->exec("create table a (c1, c2, c3)");
+        $db->exec("create table a (c1, c2, c3)");
         $db->exec("create table b (c1, c2, c3)");
         $db->exec("create table c (c1, c2, c3)");
         $db->exec("create table z (a_c1, c_c1)");
@@ -51,39 +51,41 @@ class Joiner_TableTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testGetAdapter() {
-		$this->assertEquals(true, $this->object->getAdapter() instanceof Joiner_Sqlite_Adapter);
-        
+        $this->assertEquals(true, $this->object->getAdapter() instanceof Joiner_Sqlite_Adapter);
+
     }
 
     public function testJoin() {
 
-		$table = $this->adapter->getTable('a')->join('b');
+        $table = $this->adapter->getTable('a')->join('b');
 
-		$this->assertEquals(true, $table instanceof Joiner_Sqlite_Table);
-		$this->assertEquals(true, $table === $this->object);
-		$this->assertEquals(true, $table[0]->b_c3 === 'b');
-		
-		$this->assertAttributeEquals(' INNER JOIN b AS b ON a.c1 = b.c1 ',
-				'join', $table);
+        $this->assertEquals(true, $table instanceof Joiner_Sqlite_Table);
+        $this->assertEquals(false, $table === $this->object);
+        $this->assertEquals(true, $table[0]->c1 === '1');
 
+        $this->assertAttributeEquals(' INNER JOIN b AS b ON a.c1 = b.c1 ',
+                'join', $table);
 
-		$this->assertAttributeEquals(' INNER JOIN z AS z ON a.c1 = z.a_c1  INNER JOIN  c AS c ON z.c_c1 = c.c1 ',
-				'join', $table);
+        // get a crean table
+        $table = $table->getAdapter()->getTable('a')->join('c');
+
+        $this->assertAttributeEquals(' INNER JOIN z AS z ON a.c1 = z.a_c1  INNER JOIN  c AS c ON z.c_c1 = c.c1 ',
+                'join', $table);
 
     }
 
     public function testLeftJoin() {
 
-		$table = $this->adapter->getTable('a')->leftJoin('b');
+        $table = $this->adapter->getTable('a')->leftJoin('b');
 
-		$this->assertAttributeEquals(' LEFT JOIN b AS b ON a.c1 = b.c1 ',
-				'join', $table);
+        $this->assertAttributeEquals(' LEFT JOIN b AS b ON a.c1 = b.c1 ',
+                'join', $table);
 
-		// get a crean table
-		$table = $table->getAdapter()->getTable('a')->leftJoin('c');
+        // get a crean table
+        $table = $table->getAdapter()->getTable('a')->leftJoin('c');
 
-		$this->assertAttributeEquals(' LEFT JOIN z AS z ON a.c1 = z.a_c1  LEFT JOIN  c AS c ON z.c_c1 = c.c1 ',
-				'join', $table);
+        $this->assertAttributeEquals(' LEFT JOIN z AS z ON a.c1 = z.a_c1  LEFT JOIN  c AS c ON z.c_c1 = c.c1 ',
+                'join', $table);
 
     }
 
