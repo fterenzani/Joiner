@@ -17,7 +17,8 @@ class Joiner_Sqlite_TableTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new Joiner_Sqlite_Table;
+        $db = Joiner::setAdapter(null, 'sqlite::memory:');
+        $this->object = $db->getTable('test');
     }
 
     /**

@@ -17,7 +17,7 @@ class Joiner_Sqlite_AdapterTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new Joiner_Sqlite_Adapter;
+        $this->object = new Joiner_Sqlite_Adapter('sqlite::memory:');
     }
 
     /**
@@ -31,10 +31,7 @@ class Joiner_Sqlite_AdapterTest extends PHPUnit_Framework_TestCase {
      * @todo Implement testGetTable().
      */
     public function testGetTable() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->assertInstanceOf('Joiner_Sqlite_Table', $this->object->getTable('test'));
     }
 }
 ?>
