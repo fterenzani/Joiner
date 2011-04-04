@@ -27,64 +27,102 @@ class Joiner_SchemaTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
     }
 
-    /**
-     * @todo Implement testSetTable().
-     */
+
     public function testSetTable() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $schema = $this->object->setTable('tbl_items', 'Items');
+        $schema = $schema->setTable('tbl_items2');
+        $this->assertInstanceOf('Joiner_Schema', $schema);
     }
 
-    /**
-     * @todo Implement testSetRelation().
-     */
     public function testSetRelation() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $schema = $this->object->setRelation('Items.author_id', 'Authors.id');
+        $this->assertInstanceOf('Joiner_Schema', $schema);
     }
 
-    /**
-     * @todo Implement testSetCrossReference().
-     */
-    public function testSetCrossReference() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+    public function testSetCrossReference() {        
+        $schema = $this->object->setCrossReference('Items', 'TagItem', 'Tags');
+        $this->assertInstanceOf('Joiner_Schema', $schema);
     }
 
-    /**
-     * @todo Implement testGetTableByName().
-     */
     public function testGetTableByName() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->object->setTable('expected', 'Items');
+        $this->object->setTable('expected2');
+        $this->assertEquals('expected', $this->object->getTableByName('Items'));
+        $this->assertEquals('expected2', $this->object->getTableByName('expected2'));
     }
 
-    /**
-     * @todo Implement testGetRelation().
-     */
     public function testGetRelation() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
+        $this->object->setTable('t_items', 'Items');
+        $this->object->setTable('t_authors', 'Authors');
+        $this->object->setTable('cross', 'Cross');
+        $this->object->setTable('foo', 'Foo');
+        $this->object->setRelation('Items.author_id', 'Authors.id');
+        $this->object->setCrossReference('Items', 'Cross', 'Foo');
+
+        $expected = array(
+            'key' => 'author_id',
+            'foreign' => array(
+                'name' => 'Authors',
+                'table' => 't_authors',
+                'key' => 'id',
+            )
         );
+        
+        $actual = $this->object->getRelation('Items', 'Authors');
+
+        $this->assertEquals($expected, $actual);
+
+        // -------------------
+
+        $expected = array('ref' => 'Cross');
+
+        $actual = $this->object->getRelation('Items', 'Foo');
+
+        $this->assertEquals($expected, $actual);
+
+        $this->setExpectedException('Exception');
+        $this->object->getRelation('foo', 'bar');
+
+
     }
 
     /**
      * @todo Implement testResolveTableExpr().
      */
     public function testResolveTableExpr() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
+        $this->object->setTable('tbl_items', 'Items');
+
+        $expected = Array (
+            'as' => 'tbl_items',
+            'name' => 'tbl_items',
+            'table' => 'tbl_items'
         );
+        $this->assertEquals($expected, $this->object->resolveTableExpr('tbl_items'));
+
+        $expected = Array (
+            'as' => 'i',
+            'name' => 'tbl_items',
+            'table' => 'tbl_items'
+        );
+        $this->assertEquals($expected, $this->object->resolveTableExpr('tbl_items i'));
+
+
+        $expected = Array (
+            'as' => 'i',
+            'name' => 'Items',
+            'table' => 'tbl_items'
+        );
+        $this->assertEquals($expected, $this->object->resolveTableExpr('Items i'));
+
+        $expected = Array (
+            'as' => 'Items',
+            'name' => 'Items',
+            'table' => 'tbl_items'
+        );
+        $this->assertEquals($expected, $this->object->resolveTableExpr('Items'));
+
+        $this->setExpectedException('Exception');
+        $this->object->resolveTableExpr('tbl_items i exception');
     }
 }
 ?>

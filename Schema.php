@@ -157,7 +157,7 @@ class Joiner_Schema {
      * @return array array('table' => 'db table name', 'name' => 'table alias in this schema', 'as' => 'alias to be used in the sql query')
      */
     function resolveTableExpr($tableExpr) {
-        if (preg_match('#(?:([a-z0-9_]+)\s+)?([a-z0-9_]+)#i', $tableExpr, $parts)) {
+        if (preg_match('#^(?:([a-z0-9_]+)\s+)?([a-z0-9_]+)$#i', $tableExpr, $parts)) {
 
             $id = array();
 
